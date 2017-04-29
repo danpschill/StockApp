@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">StockApp</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="empty_stocks">You do not have any stocks added. Please add a stock.</string>
+    <string name="search">search stock</string>
+    <string name="enter_stock_prompt">Enter a valid stock symbol.</string>
+</resources>

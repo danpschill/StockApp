@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.temple.stockapp.MainActivity"
+    android:orientation="vertical">
+
+
+    <!--<TextView-->
+        <!--android:id="@+id/prompt_message"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/empty_stocks" />-->
+
+
+
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/button2"-->
+        <!--android:text="Start Services"-->
+        <!--android:onClick="startService"-->
+        <!--android:layout_above="@+id/button"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginBottom="53dp" />-->
+
+    <!--<Button-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Stop Services"-->
+        <!--android:id="@+id/button"-->
+        <!--android:onClick="stopService"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignLeft="@+id/button2"-->
+        <!--android:layout_alignStart="@+id/button2"-->
+        <!--android:layout_marginBottom="26dp" />-->
+
+    <FrameLayout
+        android:id="@+id/container1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+    </FrameLayout>
+
+</LinearLayout>

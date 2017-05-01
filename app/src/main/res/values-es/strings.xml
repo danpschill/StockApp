@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">
+Aplicación de Stock</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="empty_stocks">
+Usted no tiene ninguna acción agregada. Por favor agregue una acción.</string>
+    <string name="search">
+Búsqueda de acciones</string>
+    <string name="enter_stock_prompt">
+Introduzca un símbolo de stock válido.</string>
+
+
+</resources>

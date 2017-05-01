@@ -9,15 +9,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -68,7 +71,14 @@ public class SearchActivity extends AppCompatActivity {
                         setResult(SearchActivity.RESULT_OK, resultData);
                         finish();
 
+                }else{
+                    Toast.makeText(SearchActivity.this, "This stock symbol was not found.", Toast.LENGTH_LONG).show();
+                    setResult(SearchActivity.RESULT_CANCELED, null);
+                    finish();
+
                 }
+
+
 
 
             }
@@ -111,27 +121,26 @@ public class SearchActivity extends AppCompatActivity {
                     StringBuilder stringBuilder = new StringBuilder();
                     String line;
                     line = bufferedReader.readLine();
-//                    while ((line = bufferedReader.readLine()) != null) {
-//                    System.out.println("Line: " + line);
+
                     jsonArr = new JSONArray("[" + line + "]");
 
-//                        stringBuilder.append(line).append("\n");
-//                    }
 
 
-                    String stockName = "";
+                    String stockSymbol = "";
+                    String stockPrice = "";
                     JSONObject obj = jsonArr.getJSONObject(0);
                     try {
                         //TODO Create a Stock object from information retrieved
-                        stockName = obj.getString("Symbol");
-                        stock = new Stock(obj.getString("Symbol"), "https://chart.yahoo.com/z?t=1d&s=" + obj.getString("Symbol"), obj.getString("LastPrice"));
+                        stockSymbol = obj.getString("Symbol");
+                        stockPrice = obj.getString("LastPrice");
+                        stock = new Stock(stockSymbol, "https://chart.yahoo.com/z?t=1d&s=" + stockSymbol, stockPrice);  //Add a Stock object with the stock symbol, chart link with the symbol appended to it, and the most recent price
                     } catch (Exception e) {
                         System.out.println("ERROR: " + e);
                     }
 
 
                     bufferedReader.close();
-                    return stockName;
+                    return stockSymbol;
                 } finally {
                     urlConnection.disconnect();
                 }

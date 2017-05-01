@@ -20,10 +20,10 @@ import java.util.concurrent.ExecutionException;
 
 public class DatabaseAccessAPI {
 
-    private final String ADD_TYPE = "add";
-    private final String RETRIEVE_TYPE = "retrieve";
-    private final String UPDATE_TYPE = "update";
-    private final String GET_API_DATA = "get_data";
+    private final String ADD_KEY = "add";
+    private final String RETRIEVE_KEY = "retrieve";
+    private final String UPDATE_KEY = "update";
+    private final String GET_API_DATA_KEY = "get_data";
 
     private String theURL;
     private String awsURL = "http://ec2-52-14-232-94.us-east-2.compute.amazonaws.com/StockAppWebService.php";
@@ -34,20 +34,26 @@ public class DatabaseAccessAPI {
     private String stockPrice = "";
 
 
+    /*
+    When initializing this class, initialize a new ArrayList of Stock objects to be associated with the DatabaseAccessAPI class
+     */
     DatabaseAccessAPI() {
         stockList = new ArrayList<>();
     }
 
 
+    /*
+    When the user adds a stock to the application, this method will access the API, pass in the information stored in the Stock object that was passed into the method, and add it into the database.
+     */
     void addStockToDatabase(Stock stock) {
-        theURL = awsURL;
+        theURL = awsURL;    //Set the url to use the AWS URL that my API/database is stored on
         String stockName = stock.getName();
         String stockPrice = stock.getPrice();
         String stockChart = stock.getChart();
 
         RetrieveFeedTask rft = new RetrieveFeedTask();
         try {
-            rft.execute(ADD_TYPE, stockName, stockPrice, stockChart).get();
+            rft.execute(ADD_KEY, stockName, stockPrice, stockChart).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -55,11 +61,14 @@ public class DatabaseAccessAPI {
     }
 
 
+    /*
+    When populating the ListView in the NavFragment, this method will query the database to get the names of the symbols saved by the user.
+     */
     ArrayList<Stock> RetrieveStocksFromDatabase() {
-        theURL = awsURL;
+        theURL = awsURL;    //Set the url to use the AWS URL that my API/database is stored on
         RetrieveFeedTask rft = new RetrieveFeedTask();
         try {
-            rft.execute(RETRIEVE_TYPE, "", "", "").get();
+            rft.execute(RETRIEVE_KEY, "", "", "").get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -67,17 +76,20 @@ public class DatabaseAccessAPI {
         return stockList;
     }
 
+    /*
+    Each time the StockService runs, need to update the information in the database so that the user can get the most up to date information on their saved stocks. First need to get the updated stock price for each of the stock symbols that exist in the ArrayList that was passed in, then for each of those symbols, pass the new price on to the database so that when the ListView is repopulated, it is repopulated with the most up-to-date Stock objects.
+     */
     void updateStockPrices(ArrayList<String> stockList) {
         String[] updatedStockPrices = new String[stockList.size()];
         String stockSymbol = "";
         RetrieveFeedTask rft;
 
-        for (int i = 0; i < stockList.size(); i++) {
+        for (int i = 0; i < stockList.size(); i++) {    //Get updated prices for each stock symbol in the ArrayList
             stockSymbol = stockList.get(i);
-            theURL = apiURL + stockSymbol;
+            theURL = apiURL + stockSymbol;    //Set the url to use the API URL to retrieve stock information
             rft = new RetrieveFeedTask();
             try {
-                rft.execute(GET_API_DATA, "", "", "").get();
+                rft.execute(GET_API_DATA_KEY, "", "", "").get();
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -88,11 +100,11 @@ public class DatabaseAccessAPI {
 
         theURL = awsURL;
 
-        for (int i = 0; i < stockList.size(); i++) {
+        for (int i = 0; i < stockList.size(); i++) {    //Update the corresponding stock symbols' prices in the database
             stockSymbol = stockList.get(i);
             rft = new RetrieveFeedTask();
             try {
-                rft.execute(UPDATE_TYPE, stockSymbol, updatedStockPrices[i], "").get();
+                rft.execute(UPDATE_KEY, stockSymbol, updatedStockPrices[i], "").get();
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -122,7 +134,7 @@ public class DatabaseAccessAPI {
             // Do some validation here
             HttpURLConnection conn;
 
-            String type = params[0];
+            String key = params[0];
             String stock_name = params[1];
             String stock_price = params[2];
             String stock_chart = params[3];
@@ -142,13 +154,13 @@ public class DatabaseAccessAPI {
                     conn.setDoOutput(true);
 
                     String query = "";
-                    if (type.equals(ADD_TYPE) || type.equals(RETRIEVE_TYPE) || type.equals(UPDATE_TYPE)) {
+                    if (key.equals(ADD_KEY) || key.equals(RETRIEVE_KEY) || key.equals(UPDATE_KEY)) {    //Append parameters if the key is one of these (don't want these parameters when accessing the API)
                         // Append parameters to URL
                         Uri.Builder builder = new Uri.Builder()
-                                .appendQueryParameter("type", params[0])    //Passes the 'type' parameter to the web wervice to determine what SQL query should be run, and the types are defined at the top of my code in a long list.
-                                .appendQueryParameter("symbol", params[1])    //Passes in the selected 'line' when the submit button is pressed.
+                                .appendQueryParameter("key", params[0])
+                                .appendQueryParameter("symbol", params[1])
                                 .appendQueryParameter("price", params[2])
-                                .appendQueryParameter("chart", params[3]);  //Passes in the selected 'stop' when the submit button is pressed.
+                                .appendQueryParameter("chart", params[3]);
                         query = builder.build().getEncodedQuery();
                     }
 
@@ -167,9 +179,8 @@ public class DatabaseAccessAPI {
                 }
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    StringBuilder stringBuilder = new StringBuilder();
                     String line;
-                    if (type.equals(RETRIEVE_TYPE)) {
+                    if (key.equals(RETRIEVE_KEY)) { //If we have the RETRIEVE_KEY, we are assigning the new Stock object with the information obtained from the database
                         while ((line = bufferedReader.readLine()) != null) {
                             Stock stock = new Stock();
                             stock.setName(line);
@@ -178,11 +189,11 @@ public class DatabaseAccessAPI {
                             line = bufferedReader.readLine();
                             stock.setChart(line);
 
-                            stockList.add(stock);
+                            stockList.add(stock);   //Add the newly created Stock object to the list
 
                         }
 
-                    } else if (type.equals(GET_API_DATA)) { //Get the prices from the API that will be used to update those in the database
+                    } else if (key.equals(GET_API_DATA_KEY)) { //If we have the GET_API_DATA_KEY, get the prices from the API that will be used to update those in the database
                         JSONArray jsonArr = null;
                         line = bufferedReader.readLine();
 
@@ -192,8 +203,7 @@ public class DatabaseAccessAPI {
                         JSONObject obj = jsonArr.getJSONObject(0);
                         stockPrice = obj.getString("LastPrice");
                     }
-                    //Else do nothing
-
+                    //Else no valuable information returned
 
                     bufferedReader.close();
                     return "";

@@ -1,42 +1,20 @@
 package edu.temple.stockapp;
 
-import android.app.AlarmManager;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity implements DetailsFragment.OnFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements DetailsFragment.DetailsInterface{
 
     final int STOCK_RESULT = 60;
     final String STOCK_KEY = "stock";
@@ -107,8 +85,9 @@ public class MainActivity extends AppCompatActivity implements DetailsFragment.O
                     getStockList(stock);  //Pass into the NavFragment using the interface
 
                     TextView prompt = (TextView) findViewById(R.id.prompt_message);
+                    if(prompt != null) {
                     prompt.setText("List of stocks:");  //Update message
-
+                    }
                 }
                 break;
             }

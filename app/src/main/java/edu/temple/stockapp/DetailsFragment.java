@@ -36,7 +36,7 @@ public class DetailsFragment extends Fragment {
 
     Bitmap chartImage;
 
-    private OnFragmentInteractionListener mListener;
+    private DetailsInterface mListener;
 
     public DetailsFragment() {
         // Required empty public constructor
@@ -46,7 +46,7 @@ public class DetailsFragment extends Fragment {
     public static DetailsFragment newInstance(Stock stock) {
         DetailsFragment fragment = new DetailsFragment();
         Bundle args = new Bundle();
-        args.putSerializable(STOCK_PARAM, stock);
+        args.putSerializable(STOCK_PARAM, stock);   //When creating a new instance, pass in the Stock object which will be used for getting the chart image based on the chart link stored in the object
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,14 +65,14 @@ public class DetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_details, container, false);
 
-        if(stock != null) {
+        if (stock != null) {
             TextView stockName = (TextView) v.findViewById(R.id.stock_name);
             TextView stockPrice = (TextView) v.findViewById(R.id.stock_price);
 
             stockName.setText(stock.getName());
             stockPrice.setText(stock.getPrice());
 
-            RetrieveFeedTask rft = new RetrieveFeedTask();
+            RetrieveFeedTask rft = new RetrieveFeedTask();  //Go to the internet using the chart image link to display it in the DetailsFragment
             try {
                 rft.execute("", "", "").get();
             } catch (InterruptedException | ExecutionException e) {
@@ -85,19 +85,20 @@ public class DetailsFragment extends Fragment {
 
 
         return v;
+        
     }
 
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof DetailsInterface) {
+            mListener = (DetailsInterface) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
 
     @Override
     public void onDetach() {
@@ -106,7 +107,7 @@ public class DetailsFragment extends Fragment {
     }
 
 
-    public interface OnFragmentInteractionListener {
+    public interface DetailsInterface {
 
         void getStock(String stock);
 
@@ -118,7 +119,6 @@ public class DetailsFragment extends Fragment {
 
 
     private class RetrieveFeedTask extends AsyncTask<String, String, String> {
-
 
 
         private Exception exception;
@@ -139,16 +139,13 @@ public class DetailsFragment extends Fragment {
                 URL url = new URL(stock.getChart());
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 try {
-                    JSONArray jsonArr = null;
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                    StringBuilder stringBuilder = new StringBuilder();
 
                     try {
                         chartImage = BitmapFactory.decodeStream(url.openConnection().getInputStream());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
 
 
                     bufferedReader.close();

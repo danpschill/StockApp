@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity implements DetailsFragment.D
     final String STOCK_KEY = "stock";
     final String STOCK_OBJ_KEY = "stock_obj";
 
+    Intent serviceIntent;
+
 
     NavFragment navFragment;
 
@@ -49,12 +51,12 @@ public class MainActivity extends AppCompatActivity implements DetailsFragment.D
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-                Intent i = new Intent(getBaseContext(), StockService.class);
+                serviceIntent = new Intent(getBaseContext(), StockService.class);
                 if(returnStockList() != null) {
-                    i.putExtra("stock_list", returnStockList());    //If
+                    serviceIntent.putExtra("stock_list", returnStockList());    //If
                 }
 
-                startService(i);
+                startService(serviceIntent);
             }
         }, 0, 1, TimeUnit.MINUTES); //Made a little longer so that didn't get "too many requests" error
 
@@ -151,5 +153,9 @@ public class MainActivity extends AppCompatActivity implements DetailsFragment.D
     }
 
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(serviceIntent);
+    }
 }

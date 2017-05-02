@@ -9,3 +9,5 @@ Because the service is required to update the price information every minute or 
 The charts are always as up-to-date as possible because they alone are accessing the internet each time the image loads. 
 
 There is currently no delete button, so to actually get rid of stocks from the list, I have to remove them from the database myself. I will clear the database upon submitting the lab.
+
+Dropbox link to the PHP "web service" file: https://www.dropbox.com/sh/icp178vvjr94du9/AABw2nqmyWaqr5ZQEtwoSixya?dl=0
